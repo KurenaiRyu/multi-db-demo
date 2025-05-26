@@ -27,4 +27,5 @@ ds:
 logging:
   level:
     root: info
+    sql: debug
 

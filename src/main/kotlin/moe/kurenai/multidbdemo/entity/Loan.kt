@@ -11,7 +11,7 @@ class Loan(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null,
-    var userId: Int,
+    @Column var userId: Int,
     var bookId: Int,
     @Column(name = "loan_date_time") var loanDateTime: LocalDateTime? = null,
     @Column(name = "return_date_time") var returnDateTime: LocalDateTime? = null

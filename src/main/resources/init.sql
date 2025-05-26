@@ -11,8 +11,8 @@ create table if not exists book(
 
 create table if not exists loan(
     id serial primary key ,
-    userId int,
-    bookId int,
+    user_id int,
+    book_id int,
     loan_date_time timestamp,
     return_date_time timestamp
 )
