@@ -35,7 +35,8 @@ class DBConfig {
     }
 
     @Bean
-    fun entityManagerFactory(builder: EntityManagerFactoryBuilder, ds: DataSource): LocalContainerEntityManagerFactoryBean {
+    @Primary
+    fun entityManagerFactoryBean(builder: EntityManagerFactoryBuilder, ds: DataSource): LocalContainerEntityManagerFactoryBean {
         return builder
             .dataSource(ds)
             .packages(Loan::class.java.packageName)
@@ -43,6 +44,7 @@ class DBConfig {
     }
 
     @Bean
+    @Primary
     fun transactionManager(entityManagerFactory: EntityManagerFactory): PlatformTransactionManager {
         return JpaTransactionManager(entityManagerFactory)
     }

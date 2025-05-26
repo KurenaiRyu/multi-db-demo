@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean
 import org.springframework.data.repository.Repository
 import org.springframework.data.repository.core.support.RepositoryFactorySupport
 
-class CustomJpaRepositoryFactoryBean<T: Repository<S, ID>, S, ID>(repositoryInterface: Class<out T>) :
+class CustomJpaRepositoryFactoryBean<T: Repository<S, ID>, S, ID>(repositoryInterface: Class<T>) :
     JpaRepositoryFactoryBean<T, S, ID>(repositoryInterface) {
 
     fun createFactory(entityManager: EntityManager): RepositoryFactorySupport {

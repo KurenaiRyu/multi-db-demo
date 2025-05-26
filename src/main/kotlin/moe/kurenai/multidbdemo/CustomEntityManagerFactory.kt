@@ -23,9 +23,9 @@ class CustomEntityManagerFactory {
     private lateinit var context: ApplicationContext
 
     private val entityManagerFactoryMap: MutableMap<String, EntityManagerFactory> = mutableMapOf()
-    private val repositoryFactoryBeanMap: MutableMap<String, CustomJpaRepositoryFactoryBean<JpaRepository<Any, Any>, Any, Any>> = mutableMapOf()
+    private val repositoryFactoryBeanMap: MutableMap<String, CustomJpaRepositoryFactoryBean<Repository<Any, Any>, Any, Any>> = mutableMapOf()
     private val repositoryFactoryMap: MutableMap<String, MutableMap<String, RepositoryFactorySupport>> = mutableMapOf()
-    private val repositoryMap: MutableMap<String, MutableMap<String, JpaRepository<Any, Any>>> = mutableMapOf()
+    private val repositoryMap: MutableMap<String, MutableMap<String, JpaRepository<*, *>>> = mutableMapOf()
 
     fun createEntityManager(cluster: Cluster): Session {
         val clusterName = cluster.clusterName
@@ -43,12 +43,12 @@ class CustomEntityManagerFactory {
         return emf.createEntityManager().unwrap(Session::class.java)
     }
 
-    fun <T: JpaRepository<E, F>, E, F> getRepository(cluster: Cluster, repository: Class<T>): T {
+    fun <T: Repository<E, F>, E, F> getRepository(cluster: Cluster, repository: Class<T>): T {
         val factory = getRepositoryFactory(cluster, repository)
         return factory.getRepository(repository)
     }
 
-    fun <T: JpaRepository<E, F>, E, F> getRepositoryFactory(cluster: Cluster, repository: Class<T>): RepositoryFactorySupport {
+    fun <T: Repository<E, F>, E, F> getRepositoryFactory(cluster: Cluster, repository: Class<T>): RepositoryFactorySupport {
         val factoryBean = getRepositoryFactoryBean(repository)
         val map =  repositoryFactoryMap.computeIfAbsent(repository.name) { _ ->
             mutableMapOf(cluster.clusterName to factoryBean.createFactory(createEntityManager(cluster)))
@@ -58,10 +58,11 @@ class CustomEntityManagerFactory {
         }
     }
 
-    private fun <T: Repository<E, F>, E, F> getRepositoryFactoryBean(repository: Class<T>): CustomJpaRepositoryFactoryBean<JpaRepository<E, F>, E, F> {
+    private fun <T: Repository<E, F>, E, F> getRepositoryFactoryBean(repository: Class<T>): CustomJpaRepositoryFactoryBean<Repository<E, F>, E, F> {
+        CustomJpaRepositoryFactoryBean(repository)
         return repositoryFactoryBeanMap.computeIfAbsent(repository.name) {
-            CustomJpaRepositoryFactoryBean(repository)
-        } as CustomJpaRepositoryFactoryBean<JpaRepository<E, F>, E, F>
+            CustomJpaRepositoryFactoryBean(repository) as CustomJpaRepositoryFactoryBean<Repository<Any, Any>, Any, Any>
+        } as CustomJpaRepositoryFactoryBean<Repository<E, F>, E, F>
     }
 
 }
