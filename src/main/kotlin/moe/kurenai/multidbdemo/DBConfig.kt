@@ -3,11 +3,13 @@ package moe.kurenai.multidbdemo
 import com.zaxxer.hikari.HikariDataSource
 import jakarta.persistence.EntityManagerFactory
 import moe.kurenai.multidbdemo.entity.Loan
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.jdbc.DataSourceBuilder
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
+import org.springframework.data.transaction.ChainedTransactionManager
 import org.springframework.orm.jpa.JpaTransactionManager
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
 import org.springframework.transaction.PlatformTransactionManager
@@ -36,7 +38,7 @@ class DBConfig {
 
     @Bean
     @Primary
-    fun entityManagerFactoryBean(builder: EntityManagerFactoryBuilder, ds: DataSource): LocalContainerEntityManagerFactoryBean {
+    fun entityManagerFactory(builder: EntityManagerFactoryBuilder, ds: DataSource): LocalContainerEntityManagerFactoryBean {
         return builder
             .dataSource(ds)
             .packages(Loan::class.java.packageName)
@@ -58,6 +60,19 @@ class DBConfig {
         }
     }
 
+    @Bean("cluster1EMF")
+    fun cluster1EntityManagerFactory(builder: EntityManagerFactoryBuilder, @Qualifier("cluster1DS") ds: DataSource): LocalContainerEntityManagerFactoryBean {
+        return builder
+            .dataSource(ds)
+            .packages(Loan::class.java.packageName)
+            .build()
+    }
+
+    @Bean("cluster1TXM")
+    fun cluster1TransactionManager(@Qualifier("cluster1EMF") entityManagerFactory: EntityManagerFactory): PlatformTransactionManager {
+        return JpaTransactionManager(entityManagerFactory)
+    }
+
     @Bean("cluster2DS")
     fun cluster2DS(): DataSource {
         return DataSourceBuilder.create().type(HikariDataSource::class.java).build().apply {
@@ -66,5 +81,28 @@ class DBConfig {
 //            password = "test"
         }
     }
+
+    @Bean("cluster2EMF")
+    fun cluster2EntityManagerFactory(builder: EntityManagerFactoryBuilder, @Qualifier("cluster2DS") ds: DataSource): LocalContainerEntityManagerFactoryBean {
+        return builder
+            .dataSource(ds)
+            .packages(Loan::class.java.packageName)
+            .build()
+    }
+
+    @Bean("cluster2TXM")
+    fun cluster2TransactionManager(@Qualifier("cluster2EMF") entityManagerFactory: EntityManagerFactory): PlatformTransactionManager {
+        return JpaTransactionManager(entityManagerFactory)
+    }
+
+    @Bean("chainedTXM")
+    fun chainedTXManager(@Qualifier("cluster1TXM") cluster1TXM: PlatformTransactionManager, @Qualifier("cluster2TXM") cluster2TXM: PlatformTransactionManager): PlatformTransactionManager {
+        return ChainedTransactionManager(cluster1TXM, cluster2TXM)
+    }
+
+//    @Bean("chainedTXM")
+//    fun chainedTXManager(transactionManager: PlatformTransactionManager): PlatformTransactionManager {
+//        return ChainedTransactionManager(tx)
+//    }
 
 }

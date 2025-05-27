@@ -42,5 +42,10 @@ class LoanController {
         service.testRollback()
     }
 
+    @PostMapping("multiRepo")
+    fun multiRepo() {
+        service.multiRepo()
+    }
+
 
 }

@@ -26,6 +26,7 @@ ds:
   password: "test"
 logging:
   level:
+    "org.springframework.data": trace
     root: info
     sql: debug
 
