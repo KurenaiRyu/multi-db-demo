@@ -6,6 +6,11 @@ class RoutingDataSource: AbstractRoutingDataSource() {
 
     companion object {
         private val CONTEXT = ThreadLocal<String>()
+        val DEFAULT_CATALOG = "default"
+
+        fun getCurrentCatalog(): String {
+            return CONTEXT.get()?:DEFAULT_CATALOG
+        }
 
         fun setCurrentCatalog(catalog: String) {
             CONTEXT.set(catalog)
@@ -17,6 +22,6 @@ class RoutingDataSource: AbstractRoutingDataSource() {
     }
 
     override fun determineCurrentLookupKey(): String {
-        return CONTEXT.get()?:"NULL"
+        return CONTEXT.get()?:DEFAULT_CATALOG
     }
 }

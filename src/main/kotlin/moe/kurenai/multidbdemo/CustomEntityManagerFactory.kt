@@ -8,9 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationContext
 import org.springframework.data.repository.Repository
 import org.springframework.data.repository.core.support.RepositoryFactorySupport
+import org.springframework.orm.jpa.JpaTransactionManager
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter
 import org.springframework.stereotype.Service
+import org.springframework.transaction.PlatformTransactionManager
 import javax.sql.DataSource
 
 @Service
@@ -18,6 +20,8 @@ class CustomEntityManagerFactory {
 
     @Autowired
     private lateinit var context: ApplicationContext
+    @Autowired
+    private lateinit var transactionManagerMap: Map<String, PlatformTransactionManager>
 
     private val entityManagerFactoryMap: MutableMap<String, EntityManagerFactory> = mutableMapOf()
     private val repositoryFactoryBeanMap: MutableMap<String, CustomJpaRepositoryFactoryBean<Repository<Any, Any>, Any, Any>> = mutableMapOf()
@@ -27,6 +31,16 @@ class CustomEntityManagerFactory {
 
     fun getEntityManager(cluster: Cluster): Session {
         val clusterName = cluster.clusterName
+
+        val tx = transactionManagerMap.keys.find { it.startsWith(clusterName) }?.let {
+            transactionManagerMap[it]
+        }?.let {
+            it as? JpaTransactionManager
+        }
+
+        tx?.dataSource?.let {
+            tx.entityManagerFactory?.createEntityManager()
+        }
 
         return entityManagerMap.computeIfAbsent(clusterName) {
             val emf = entityManagerFactoryMap.computeIfAbsent(clusterName) {

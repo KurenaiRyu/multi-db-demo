@@ -1,7 +1,7 @@
 package moe.kurenai.multidbdemo
 
 import moe.kurenai.multidbdemo.entity.Loan
-import moe.kurenai.multidbdemo.repository.LoanRepository
+import moe.kurenai.multidbdemo.repository.base.LoanRepository
 import moe.kurenai.multidbdemo.repository.cluster1.Cluster1LoanRepository
 import moe.kurenai.multidbdemo.repository.cluster2.Cluster2LoanRepository
 import org.hibernate.FlushMode
@@ -93,6 +93,11 @@ class LoanService {
     fun multiRepo() {
         c1Repo.save(Loan(userId = 100, bookId = 100, loanDateTime = LocalDateTime.now()))
         c2Repo.save(Loan(userId = 200, bookId = 200, loanDateTime = LocalDateTime.now()))
+    }
+
+    @Transactional(rollbackFor = [Exception::class], transactionManager = "dynamicTXM")
+    fun testSingle() {
+        repository.save(Loan(userId = 99, bookId = 99, loanDateTime = LocalDateTime.now()))
     }
 
 }

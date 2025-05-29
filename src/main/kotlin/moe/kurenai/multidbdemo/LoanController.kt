@@ -15,6 +15,9 @@ class LoanController {
     @Autowired
     private lateinit var service: LoanService
 
+    @Autowired
+    private lateinit var catalogService: CatalogService
+
     @GetMapping("{cluster}/user/{userId}")
     fun findByUserId(@PathVariable("cluster") cluster: Cluster, @PathVariable("userId") userId: Long): List<Loan> {
         return service.findByUserId(cluster,userId)
@@ -45,6 +48,14 @@ class LoanController {
     @PostMapping("multiRepo")
     fun multiRepo() {
         service.multiRepo()
+    }
+
+    @PostMapping("single")
+    fun single() {
+        catalogService.changeCatalog(Cluster.CLUSTER1)
+        service.testSingle()
+        catalogService.changeCatalog(Cluster.CLUSTER2)
+        service.testSingle()
     }
 
 
