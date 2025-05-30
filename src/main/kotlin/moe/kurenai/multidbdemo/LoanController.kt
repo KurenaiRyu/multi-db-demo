@@ -15,18 +15,6 @@ class LoanController {
     @Autowired
     private lateinit var service: LoanService
 
-    @GetMapping("{cluster}/user/{userId}")
-    fun findByUserId(@PathVariable("cluster") cluster: Cluster, @PathVariable("userId") userId: Long): List<Loan> {
-        return service.findByUserId(cluster,userId)
-    }
-
-    @PostMapping("{cluster}/lean/{userId}/{bookId}")
-    fun findByUserId(@PathVariable("cluster") cluster: Cluster,
-                     @PathVariable("userId") userId: Int,
-                     @PathVariable("bookId") bookId: Int) {
-        service.lean(cluster,userId, bookId)
-    }
-
     @GetMapping("test")
     fun testRetrieve(): List<Loan> {
         return service.testRetrieve()

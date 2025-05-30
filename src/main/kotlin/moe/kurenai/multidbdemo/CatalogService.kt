@@ -12,23 +12,8 @@ import java.sql.Connection
 @Service
 class CatalogService {
 
-    @Autowired
-    private lateinit var entityManagerFactory: EntityManagerFactory
-
-    @PersistenceContext
-    private lateinit var entityManager: EntityManager
-
-    @Transactional
     fun changeCatalog(cluster: Cluster) {
-        entityManager.flush()
-        entityManager.clear()
-
-        val session = entityManager.unwrap(Session::class.java)
         RoutingDataSource.setCurrentCatalog(cluster.clusterName)
-        session.doWork {
-            println("$cluster: $it")
-            it.catalog = cluster.clusterName
-        }
     }
 
 }

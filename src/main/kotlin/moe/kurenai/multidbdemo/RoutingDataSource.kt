@@ -11,6 +11,10 @@ class RoutingDataSource: AbstractRoutingDataSource() {
             CONTEXT.set(catalog)
         }
 
+        fun getCurrentCatalog(): String {
+            return CONTEXT.get()
+        }
+
         fun clear() {
             CONTEXT.remove()
         }
