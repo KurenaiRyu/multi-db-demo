@@ -21,6 +21,10 @@ class RoutingDataSource: AbstractRoutingDataSource() {
         }
     }
 
+    fun setCurrentCatalog(catalog: String) {
+        CONTEXT.set(catalog)
+    }
+
     override fun determineCurrentLookupKey(): String {
         return CONTEXT.get()?:DEFAULT_CATALOG
     }

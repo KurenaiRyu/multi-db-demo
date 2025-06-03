@@ -31,15 +31,14 @@ class DBConfig {
 
     @Bean
     @Primary
-    fun routingDataSource(): DataSource {
+    fun routingDataSource(@Qualifier("cluster1DS") c1DS: DataSource, @Qualifier("cluster2DS") c2DS: DataSource): DataSource {
         val ds = RoutingDataSource()
-        val cluster1DS = cluster1DS()
         val targetDataSources: Map<Any, Any> = mutableMapOf(
-            Cluster.CLUSTER1.clusterName to cluster1DS,
-            Cluster.CLUSTER2.clusterName to cluster2DS(),
+            Cluster.CLUSTER1.clusterName to c1DS,
+            Cluster.CLUSTER2.clusterName to c2DS,
         )
         ds.setTargetDataSources(targetDataSources)
-        ds.setDefaultTargetDataSource(cluster1DS)
+        ds.setDefaultTargetDataSource(c1DS)
 
         return ds
     }
@@ -53,11 +52,11 @@ class DBConfig {
             .build()
     }
 
-    @Bean
-    @Primary
-    fun transactionManager(entityManagerFactory: EntityManagerFactory): PlatformTransactionManager {
-        return JpaTransactionManager(entityManagerFactory)
-    }
+//    @Bean
+//    @Primary
+//    fun transactionManager(entityManagerFactory: EntityManagerFactory): PlatformTransactionManager {
+//        return JpaTransactionManager(entityManagerFactory)
+//    }
 
     @Bean("cluster1DS")
     fun cluster1DS(): DataSource {
@@ -109,10 +108,14 @@ class DBConfig {
     }
 
     @Bean("dynamicEMF")
-    fun dynamicEntityManagerFactory (builder: EntityManagerFactoryBuilder): AbstractEntityManagerFactoryBean {
+    @Primary
+    fun dynamicEntityManagerFactory (
+        @Qualifier("cluster1EMF") cluster1EMF: LocalContainerEntityManagerFactoryBean,
+        @Qualifier("cluster2EMF") cluster2EMF: LocalContainerEntityManagerFactoryBean,
+                                     ): AbstractEntityManagerFactoryBean {
         val manager = DynamicEntityManagerFactoryBean(mapOf(
-            "cluster1" to cluster1EntityManagerFactory(builder, cluster1DS()),
-            "cluster2" to cluster2EntityManagerFactory(builder, cluster2DS())))
+            "cluster1" to cluster1EMF,
+            "cluster2" to cluster2EMF))
         return manager
     }
 
