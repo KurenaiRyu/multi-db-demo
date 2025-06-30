@@ -1,7 +1,7 @@
 package moe.kurenai.multidbdemo
 
+import jakarta.persistence.EntityManager
 import org.springframework.data.jpa.domain.Specification
-import javax.persistence.EntityManager
 
 object TxUtil {
 
