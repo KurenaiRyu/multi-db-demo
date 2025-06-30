@@ -1,9 +1,9 @@
 package moe.kurenai.multidbdemo.entity
 
-import jakarta.persistence.*
 import java.io.Serial
 import java.io.Serializable
 import java.time.LocalDateTime
+import javax.persistence.*
 
 @Entity
 @Table(name = "loan")

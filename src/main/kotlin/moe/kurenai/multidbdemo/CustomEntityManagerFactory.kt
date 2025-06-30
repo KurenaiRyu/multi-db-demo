@@ -1,7 +1,5 @@
 package moe.kurenai.multidbdemo
 
-import jakarta.persistence.EntityManager
-import jakarta.persistence.EntityManagerFactory
 import moe.kurenai.multidbdemo.entity.Loan
 import org.hibernate.Session
 import org.springframework.beans.factory.annotation.Autowired
@@ -13,6 +11,8 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter
 import org.springframework.stereotype.Service
 import org.springframework.transaction.PlatformTransactionManager
+import javax.persistence.EntityManager
+import javax.persistence.EntityManagerFactory
 import javax.sql.DataSource
 
 @Service

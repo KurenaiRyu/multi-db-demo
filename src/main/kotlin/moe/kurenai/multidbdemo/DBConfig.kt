@@ -1,7 +1,6 @@
 package moe.kurenai.multidbdemo
 
 import com.zaxxer.hikari.HikariDataSource
-import jakarta.persistence.EntityManagerFactory
 import moe.kurenai.multidbdemo.entity.Loan
 import moe.kurenai.multidbdemo.repository.base.LoanRepository
 import org.springframework.beans.factory.annotation.Qualifier
@@ -17,6 +16,7 @@ import org.springframework.orm.jpa.JpaTransactionManager
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.annotation.EnableTransactionManagement
+import javax.persistence.EntityManagerFactory
 import javax.sql.DataSource
 
 

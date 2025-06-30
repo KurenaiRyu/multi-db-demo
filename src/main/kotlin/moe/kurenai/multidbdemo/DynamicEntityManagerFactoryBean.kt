@@ -1,8 +1,8 @@
 package moe.kurenai.multidbdemo
 
-import jakarta.persistence.EntityManagerFactory
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
+import javax.persistence.EntityManagerFactory
 
 class DynamicEntityManagerFactoryBean(
     private val entityManagerFactoryMap: Map<String, LocalContainerEntityManagerFactoryBean>
