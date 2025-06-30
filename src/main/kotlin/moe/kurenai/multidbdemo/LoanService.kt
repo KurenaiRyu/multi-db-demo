@@ -1,5 +1,6 @@
 package moe.kurenai.multidbdemo
 
+import moe.kurenai.multidbdemo.entity.Book
 import moe.kurenai.multidbdemo.entity.Loan
 import moe.kurenai.multidbdemo.repository.base.LoanRepository
 import moe.kurenai.multidbdemo.repository.cluster1.Cluster1LoanRepository
@@ -61,7 +62,7 @@ class LoanService {
         return res
     }
 
-    @Transactional(transactionManager = "chainedTXM")
+    @Transactional
     fun testSave() {
         catalogService.changeCatalog(Cluster.CLUSTER1)
         repository.save(Loan(userId = 1, bookId = 1, loanDateTime = LocalDateTime.now()))
@@ -70,7 +71,7 @@ class LoanService {
         repository.save(Loan(userId = 2, bookId = 2, loanDateTime = LocalDateTime.now()))
     }
 
-    @Transactional(rollbackFor = [Exception::class], transactionManager = "chainedTXM")
+    @Transactional(rollbackFor = [Exception::class])
     fun testRollback() {
         catalogService.changeCatalog(Cluster.CLUSTER2)
         repository.save(Loan(userId = 20, bookId = 20, loanDateTime = LocalDateTime.now()))
@@ -89,14 +90,20 @@ class LoanService {
         em2.persist(Loan(userId = 1, bookId = 1, loanDateTime = LocalDateTime.now()))
     }
 
-    @Transactional(rollbackFor = [Exception::class], transactionManager = "chainedTXM")
+    @Transactional(rollbackFor = [Exception::class])
     fun multiRepo() {
         c1Repo.save(Loan(userId = 100, bookId = 100, loanDateTime = LocalDateTime.now()))
         c2Repo.save(Loan(userId = 200, bookId = 200, loanDateTime = LocalDateTime.now()))
     }
 
-    @Transactional(rollbackFor = [Exception::class], transactionManager = "dynamicTXM")
+    @Transactional(rollbackFor = [Exception::class])
     fun testSingle() {
+        repository.save(Loan(userId = 99, bookId = 99, loanDateTime = LocalDateTime.now()))
+    }
+
+    @Transactional(rollbackFor = [Exception::class])
+    fun xa() {
+        repository.save(Book)
         repository.save(Loan(userId = 99, bookId = 99, loanDateTime = LocalDateTime.now()))
     }
 

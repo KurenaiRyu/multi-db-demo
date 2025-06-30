@@ -2,11 +2,7 @@ package moe.kurenai.multidbdemo
 
 import moe.kurenai.multidbdemo.entity.Loan
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/v1/loan")
@@ -56,6 +52,14 @@ class LoanController {
         service.testSingle()
         catalogService.changeCatalog(Cluster.CLUSTER2)
         service.testSingle()
+    }
+
+    @GetMapping("xa")
+    fun xa() {
+        catalogService.changeCatalog(Cluster.CLUSTER1)
+        service.xa()
+        catalogService.changeCatalog(Cluster.CLUSTER2)
+        service.xa()
     }
 
 

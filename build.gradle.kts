@@ -29,9 +29,14 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+
+    // 2pc
+    val atomikosVersion = "6.0.0"
+    implementation("com.atomikos:transactions-spring-boot3-starter:$atomikosVersion")
+
     implementation("com.baomidou:dynamic-datasource-spring-boot-starter:3.6.1")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    runtimeOnly("org.postgresql:postgresql")
+    implementation("org.postgresql:postgresql")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")

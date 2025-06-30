@@ -11,8 +11,8 @@ class Loan(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null,
-    @Column var userId: Int,
-    var bookId: Int,
+    @Column(name = "user_id") var userId: Int,
+    @Column(name = "book_id")var bookId: Int,
     @Column(name = "loan_date_time") var loanDateTime: LocalDateTime? = null,
     @Column(name = "return_date_time") var returnDateTime: LocalDateTime? = null
 ): Serializable {

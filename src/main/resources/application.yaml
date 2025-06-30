@@ -19,6 +19,10 @@ spring:
       password: "test"
   jpa:
     open-in-view: false
+  jta:
+    atomikos:
+      properties:
+        max-timeout: 900000
 
 ds:
   url: "jdbc:postgresql://10.0.0.20:5432/multi_db_test?currentSchema=cluster_1"
@@ -26,7 +30,8 @@ ds:
   password: "test"
 logging:
   level:
-    "org.springframework.data": trace
     root: info
     sql: debug
+    "org.springframework.data": trace
+    "com.atomikos": DEBUG
 
