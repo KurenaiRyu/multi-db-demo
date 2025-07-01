@@ -3,13 +3,16 @@ package moe.kurenai.multidbdemo
 import com.zaxxer.hikari.HikariDataSource
 import jakarta.persistence.EntityManagerFactory
 import moe.kurenai.multidbdemo.entity.Loan
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.jdbc.DataSourceBuilder
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
+import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean
 import org.springframework.orm.jpa.JpaTransactionManager
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
+import org.springframework.orm.jpa.LocalEntityManagerFactoryBean
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.annotation.EnableTransactionManagement
 import javax.sql.DataSource
@@ -36,17 +39,22 @@ class DBConfig {
 
     @Bean
     @Primary
-    fun entityManagerFactoryBean(builder: EntityManagerFactoryBuilder, ds: DataSource): LocalContainerEntityManagerFactoryBean {
-        return builder
-            .dataSource(ds)
-            .packages(Loan::class.java.packageName)
-            .build()
+    fun entityManagerFactoryBean(@Qualifier("cluster1EMF") emf1: LocalContainerEntityManagerFactoryBean,
+                                 @Qualifier("cluster2EMF") emf2: LocalContainerEntityManagerFactoryBean,): AbstractEntityManagerFactoryBean {
+        return DynamicEntityManagerFactorBean(mutableMapOf("cluster1" to emf1, "cluster2" to emf2))
     }
 
     @Bean
     @Primary
     fun transactionManager(entityManagerFactory: EntityManagerFactory): PlatformTransactionManager {
         return JpaTransactionManager(entityManagerFactory)
+    }
+
+    @Bean("cluster1EMF")
+    fun cluster1EntityManagerFactory(builder: EntityManagerFactoryBuilder): LocalContainerEntityManagerFactoryBean? {
+        return builder.dataSource(cluster1DS())
+            .packages(Loan::class.java.packageName)
+            .build()
     }
 
     @Bean("cluster1DS")
@@ -56,6 +64,13 @@ class DBConfig {
             username = "kurenai"
             password = "test"
         }
+    }
+
+    @Bean("cluster2EMF")
+    fun cluster2EntityManagerFactory(builder: EntityManagerFactoryBuilder): LocalContainerEntityManagerFactoryBean? {
+        return builder.dataSource(cluster2DS())
+            .packages(Loan::class.java.packageName)
+            .build()
     }
 
     @Bean("cluster2DS")
