@@ -1,4 +1,4 @@
-//package moe.kurenai.multidbdemo
+package moe.kurenai.multidbdemo.config//package moe.kurenai.multidbdemo
 //
 //import moe.kurenai.multidbdemo.repository.cluster2.Cluster2LoanRepository
 //import org.springframework.context.annotation.Configuration

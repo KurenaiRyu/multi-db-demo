@@ -1,5 +1,6 @@
 package moe.kurenai.multidbdemo
 
+import moe.kurenai.multidbdemo.config.Cluster
 import moe.kurenai.multidbdemo.entity.Loan
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
@@ -41,11 +42,6 @@ class LoanController {
         service.testRollback()
     }
 
-    @PostMapping("multiRepo")
-    fun multiRepo() {
-        service.multiRepo()
-    }
-
     @PostMapping("single")
     fun single() {
         catalogService.changeCatalog(Cluster.CLUSTER1)
@@ -60,6 +56,12 @@ class LoanController {
         service.xa()
         catalogService.changeCatalog(Cluster.CLUSTER2)
         service.xa()
+    }
+
+    @GetMapping("book")
+    fun book() {
+        catalogService.changeCatalog(Cluster.CLUSTER1)
+        service.book()
     }
 
 

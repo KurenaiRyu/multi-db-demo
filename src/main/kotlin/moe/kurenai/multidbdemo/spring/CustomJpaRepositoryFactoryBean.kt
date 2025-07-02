@@ -1,4 +1,4 @@
-package moe.kurenai.multidbdemo
+package moe.kurenai.multidbdemo.spring
 
 import jakarta.persistence.EntityManager
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean

@@ -1,7 +1,8 @@
-package moe.kurenai.multidbdemo
+package moe.kurenai.multidbdemo.spring
 
 import jakarta.persistence.EntityManager
 import jakarta.persistence.EntityManagerFactory
+import moe.kurenai.multidbdemo.config.Cluster
 import moe.kurenai.multidbdemo.entity.Loan
 import org.hibernate.Session
 import org.springframework.beans.factory.annotation.Autowired

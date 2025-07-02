@@ -1,8 +1,10 @@
-package moe.kurenai.multidbdemo
+package moe.kurenai.multidbdemo.config
 
 import com.atomikos.spring.AtomikosDataSourceBean
 import moe.kurenai.multidbdemo.entity.Loan
-import moe.kurenai.multidbdemo.repository.base.LoanRepository
+import moe.kurenai.multidbdemo.repository.common.LoanRepository
+import moe.kurenai.multidbdemo.spring.DynamicEntityManagerFactoryBean
+import moe.kurenai.multidbdemo.spring.RoutingDataSource
 import org.postgresql.xa.PGXADataSource
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder
@@ -20,13 +22,15 @@ import javax.sql.DataSource
 @EnableTransactionManagement
 @EnableJpaRepositories(
     basePackageClasses = [LoanRepository::class],
-    entityManagerFactoryRef = "dynamicEMF",
 )
 class DBConfig {
 
     @Bean
     @Primary
-    fun routingDataSource(@Qualifier("cluster1DS") c1DS: DataSource, @Qualifier("cluster2DS") c2DS: DataSource): DataSource {
+    fun routingDataSource(
+        @Qualifier("cluster1DS") c1DS: DataSource,
+        @Qualifier("cluster2DS") c2DS: DataSource
+    ): DataSource {
         val ds = RoutingDataSource()
         val targetDataSources: Map<Any, Any> = mutableMapOf(
             Cluster.CLUSTER1.clusterName to c1DS,
@@ -37,21 +41,6 @@ class DBConfig {
 
         return ds
     }
-
-    @Bean
-    @Primary
-    fun entityManagerFactory(builder: EntityManagerFactoryBuilder, ds: DataSource): LocalContainerEntityManagerFactoryBean {
-        return builder
-            .dataSource(ds)
-            .packages(Loan::class.java.packageName)
-            .build()
-    }
-
-//    @Bean
-//    @Primary
-//    fun transactionManager(entityManagerFactory: EntityManagerFactory): PlatformTransactionManager {
-//        return JpaTransactionManager(entityManagerFactory)
-//    }
 
     @Bean("cluster1DS")
     fun cluster1DS(): DataSource {
@@ -65,7 +54,10 @@ class DBConfig {
     }
 
     @Bean("cluster1EMF")
-    fun cluster1EntityManagerFactory(builder: EntityManagerFactoryBuilder, @Qualifier("cluster1DS") ds: DataSource): LocalContainerEntityManagerFactoryBean {
+    fun cluster1EntityManagerFactory(
+        builder: EntityManagerFactoryBuilder,
+        @Qualifier("cluster1DS") ds: DataSource
+    ): LocalContainerEntityManagerFactoryBean {
         return builder
             .dataSource(ds)
             .jta(true)
@@ -86,7 +78,10 @@ class DBConfig {
     }
 
     @Bean("cluster2EMF")
-    fun cluster2EntityManagerFactory(builder: EntityManagerFactoryBuilder, @Qualifier("cluster2DS") ds: DataSource): LocalContainerEntityManagerFactoryBean {
+    fun cluster2EntityManagerFactory(
+        builder: EntityManagerFactoryBuilder,
+        @Qualifier("cluster2DS") ds: DataSource
+    ): LocalContainerEntityManagerFactoryBean {
         return builder
             .dataSource(ds)
             .jta(true)
@@ -95,31 +90,19 @@ class DBConfig {
             .build()
     }
 
-    @Bean("dynamicEMF")
+    @Bean
     @Primary
-    fun dynamicEntityManagerFactory (
+    fun entityManagerFactory(
         @Qualifier("cluster1EMF") cluster1EMF: LocalContainerEntityManagerFactoryBean,
         @Qualifier("cluster2EMF") cluster2EMF: LocalContainerEntityManagerFactoryBean,
-                                     ): AbstractEntityManagerFactoryBean {
-        val manager = DynamicEntityManagerFactoryBean(mapOf(
-            "cluster1" to cluster1EMF,
-            "cluster2" to cluster2EMF))
+    ): AbstractEntityManagerFactoryBean {
+        val manager = DynamicEntityManagerFactoryBean(
+            mapOf(
+                "cluster1" to cluster1EMF,
+                "cluster2" to cluster2EMF
+            )
+        )
         return manager
     }
-
-//    @Bean("dynamicTXM")
-//    fun dynamicTransactionManager(@Qualifier("dynamicEMF") entityManagerFactory: EntityManagerFactory): PlatformTransactionManager {
-//        return JpaTransactionManager(entityManagerFactory)
-//    }
-
-
-
-
-
-
-//    @Bean("chainedTXM")
-//    fun chainedTXManager(transactionManager: PlatformTransactionManager): PlatformTransactionManager {
-//        return ChainedTransactionManager(tx)
-//    }
 
 }

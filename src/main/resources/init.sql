@@ -6,7 +6,8 @@ create table if not exists "user" (
 create table if not exists book(
     id serial primary key ,
     title varchar(200),
-    author varchar(200)
+    author varchar(200),
+    update timestamp without time zone
 );
 
 create table if not exists loan(

@@ -1,10 +1,13 @@
 package moe.kurenai.multidbdemo
 
+import moe.kurenai.multidbdemo.config.Cluster
 import moe.kurenai.multidbdemo.entity.Book
 import moe.kurenai.multidbdemo.entity.Loan
-import moe.kurenai.multidbdemo.repository.base.LoanRepository
-import moe.kurenai.multidbdemo.repository.cluster1.Cluster1LoanRepository
-import moe.kurenai.multidbdemo.repository.cluster2.Cluster2LoanRepository
+import moe.kurenai.multidbdemo.repository.base.BookRepository
+import moe.kurenai.multidbdemo.repository.common.DynamicBookRepository
+import moe.kurenai.multidbdemo.repository.common.LoanRepository
+import moe.kurenai.multidbdemo.spring.CustomEntityManagerFactory
+import moe.kurenai.multidbdemo.spring.RoutingDataSource
 import org.hibernate.FlushMode
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -26,10 +29,12 @@ class LoanService {
     private lateinit var repository: LoanRepository
 
     @Autowired
-    private lateinit var c1Repo: Cluster1LoanRepository
+    @Qualifier("dynamicBookRepository")
+    private lateinit var dyBookRepo: DynamicBookRepository
 
     @Autowired
-    private lateinit var c2Repo: Cluster2LoanRepository
+    @Qualifier("bookRepository")
+    private lateinit var bookRepo: BookRepository
 
     fun findByUserId(cluster: Cluster, userId: Long):List<Loan>{
         val em = emf.getEntityManager(cluster)
@@ -91,20 +96,19 @@ class LoanService {
     }
 
     @Transactional(rollbackFor = [Exception::class])
-    fun multiRepo() {
-        c1Repo.save(Loan(userId = 100, bookId = 100, loanDateTime = LocalDateTime.now()))
-        c2Repo.save(Loan(userId = 200, bookId = 200, loanDateTime = LocalDateTime.now()))
-    }
-
-    @Transactional(rollbackFor = [Exception::class])
     fun testSingle() {
         repository.save(Loan(userId = 99, bookId = 99, loanDateTime = LocalDateTime.now()))
     }
 
     @Transactional(rollbackFor = [Exception::class])
     fun xa() {
-        repository.save(Book)
-        repository.save(Loan(userId = 99, bookId = 99, loanDateTime = LocalDateTime.now()))
+        val now = LocalDateTime.now()
+        dyBookRepo.save(Book(title = "Test ${RoutingDataSource.getCurrentCatalog()} $now", author = "Hollis", update = now))
+        bookRepo.save(Book(title = "Test ${RoutingDataSource.getCurrentCatalog()} $now", author = "Hollis", update = now))
+    }
+
+    fun book() {
+        bookRepo.save(Book(title = "Test ${RoutingDataSource.getCurrentCatalog()} ${LocalDateTime.now()}", author = "Hollis"))
     }
 
 }

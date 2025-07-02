@@ -1,4 +1,4 @@
-//package moe.kurenai.multidbdemo
+package moe.kurenai.multidbdemo.config//package moe.kurenai.multidbdemo
 //
 //import jakarta.persistence.EntityManagerFactory
 //import moe.kurenai.multidbdemo.repository.cluster1.Cluster1LoanRepository

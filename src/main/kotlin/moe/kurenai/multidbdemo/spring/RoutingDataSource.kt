@@ -1,4 +1,4 @@
-package moe.kurenai.multidbdemo
+package moe.kurenai.multidbdemo.spring
 
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource
 
@@ -9,7 +9,7 @@ class RoutingDataSource: AbstractRoutingDataSource() {
         val DEFAULT_CATALOG = "default"
 
         fun getCurrentCatalog(): String {
-            return CONTEXT.get()?:DEFAULT_CATALOG
+            return CONTEXT.get()?: DEFAULT_CATALOG
         }
 
         fun setCurrentCatalog(catalog: String) {
@@ -26,6 +26,6 @@ class RoutingDataSource: AbstractRoutingDataSource() {
     }
 
     override fun determineCurrentLookupKey(): String {
-        return CONTEXT.get()?:DEFAULT_CATALOG
+        return CONTEXT.get()?: DEFAULT_CATALOG
     }
 }

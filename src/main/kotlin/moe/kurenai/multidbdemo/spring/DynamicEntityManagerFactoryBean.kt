@@ -1,4 +1,4 @@
-package moe.kurenai.multidbdemo
+package moe.kurenai.multidbdemo.spring
 
 import jakarta.persistence.EntityManagerFactory
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean

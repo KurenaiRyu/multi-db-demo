@@ -1,4 +1,4 @@
-package moe.kurenai.multidbdemo
+package moe.kurenai.multidbdemo.config
 
 enum class Cluster(val clusterName: String) {
 
