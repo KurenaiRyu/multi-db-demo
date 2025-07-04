@@ -107,6 +107,14 @@ class LoanService {
         bookRepo.save(Book(title = "Test ${RoutingDataSource.getCurrentCatalog()} $now", author = "Hollis", update = now))
     }
 
+    @Transactional(rollbackFor = [Exception::class])
+    fun xaRollBack() {
+        // set update null for roll back
+        val now = LocalDateTime.now()
+        dyBookRepo.save(Book(title = "Test ${RoutingDataSource.getCurrentCatalog()} $now", author = "Hollis"))
+        bookRepo.save(Book(title = "Test ${RoutingDataSource.getCurrentCatalog()} $now", author = "Hollis"))
+    }
+
     fun book() {
         bookRepo.save(Book(title = "Test ${RoutingDataSource.getCurrentCatalog()} ${LocalDateTime.now()}", author = "Hollis"))
     }

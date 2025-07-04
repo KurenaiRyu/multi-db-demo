@@ -58,6 +58,14 @@ class LoanController {
         service.xa()
     }
 
+    @GetMapping("xa-roll-back")
+    fun xaRollBack() {
+        catalogService.changeCatalog(Cluster.CLUSTER1)
+        service.xaRollBack()
+        catalogService.changeCatalog(Cluster.CLUSTER2)
+        service.xaRollBack()
+    }
+
     @GetMapping("book")
     fun book() {
         catalogService.changeCatalog(Cluster.CLUSTER1)
